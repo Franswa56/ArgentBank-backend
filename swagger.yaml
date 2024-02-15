@@ -65,11 +65,9 @@ paths:
         - User Module
       summary: User Profile API
       description: API for fetching a user profile
-      #produces:
-       # - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile retrieved successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
@@ -94,18 +92,90 @@ paths:
         - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile updated successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
           description: Invalid Fields
         '500':
           description: Internal Server Error
+  /user/transactions:
+    get:
+      tags:
+        - Transaction Module
+      summary: Get all transactions for the authenticated user
+      description: API endpoint to get all transactions for the currently authenticated user
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: An array of transactions for the authenticated user
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+        '404':
+          description: No transactions found
+  /user/transactions/{transactionId}:
+    get:
+      tags:
+        - Transaction Module
+      summary: Get a single transaction for the authenticated user
+      description: API endpoint to get details of a single transaction for the currently authenticated user
+      security:
+        - Bearer: []
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier for the transaction
+      responses:
+        '200':
+          description: Details of a single transaction for the authenticated user
+          schema:
+            $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+    patch:
+      tags:
+        - Transaction Module
+      summary: Update a transaction for the authenticated user
+      description: API endpoint to update the category or comment of a transaction for the currently authenticated user
+      security:
+        - Bearer: []
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier for the transaction
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              category:
+                type: string
+                description: New category for the transaction
+              comment:
+                type: string
+                description: New comment on the transaction
+      responses:
+        '200':
+          description: Transaction for the authenticated user updated
+          schema:
+            $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+
 securityDefinitions:
   Bearer:
     type: apiKey
     name: Authorization
     in: header
+
 definitions:
   User:
     properties:
@@ -156,3 +226,26 @@ definitions:
     properties:
       userName:
         type: string
+  Transaction:
+    type: object
+    properties:
+      transactionId:
+        type: string
+        description: Unique identifier of the transaction
+      date:
+        type: string
+        format: date
+        description: Date of the transaction
+      description:
+        type: string
+        description: Description of the transaction
+      amount:
+        type: number
+        format: float
+        description: Amount of the transaction
+      category:
+        type: string
+        description: Category of the transaction
+      comment:
+        type: string
+        description: Comment on the transaction
