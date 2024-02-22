@@ -99,28 +99,30 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
-  /user/transactions:
+  /transactions/current/grouped:
     get:
       tags:
         - Transaction Module
-      summary: Get all transactions for the authenticated user
-      description: API endpoint to get all transactions for the currently authenticated user
+      summary: Get current month's transactions grouped by account
+      description: Fetches transactions for the currently authenticated user for the current month, automatically grouped by account.
       security:
         - Bearer: []
       responses:
         '200':
-          description: An array of transactions for the authenticated user
+          description: Transactions for the current month, grouped by account.
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Transaction'
+            type: object
+            additionalProperties:
+              type: array
+              items:
+                $ref: '#/definitions/Transaction'
         '404':
-          description: No transactions found
-  /user/transactions/{transactionId}:
+          description: No transactions found for the current month.
+  /transactions/{transactionId}:
     get:
       tags:
         - Transaction Module
-      summary: Get a single transaction for the authenticated user
+      summary: Get a single transaction
       description: API endpoint to get details of a single transaction for the currently authenticated user
       security:
         - Bearer: []
@@ -132,7 +134,7 @@ paths:
           description: Unique identifier for the transaction
       responses:
         '200':
-          description: Details of a single transaction for the authenticated user
+          description: Details of a single transaction
           schema:
             $ref: '#/definitions/Transaction'
         '404':
@@ -140,8 +142,8 @@ paths:
     patch:
       tags:
         - Transaction Module
-      summary: Update a transaction for the authenticated user
-      description: API endpoint to update the category or comment of a transaction for the currently authenticated user
+      summary: Update transaction details
+      description: API endpoint to update details of a transaction for the currently authenticated user
       security:
         - Bearer: []
       parameters:
@@ -154,19 +156,10 @@ paths:
           name: body
           required: true
           schema:
-            type: object
-            properties:
-              category:
-                type: string
-                description: New category for the transaction
-              comment:
-                type: string
-                description: New comment on the transaction
+            $ref: '#/definitions/TransactionUpdate'
       responses:
         '200':
-          description: Transaction for the authenticated user updated
-          schema:
-            $ref: '#/definitions/Transaction'
+          description: Transaction details updated successfully
         '404':
           description: Transaction not found
 
@@ -177,6 +170,7 @@ securityDefinitions:
     in: header
 
 definitions:
+  definitions:
   User:
     properties:
       email:
@@ -249,3 +243,12 @@ definitions:
       comment:
         type: string
         description: Comment on the transaction
+  TransactionUpdate:
+    type: object
+    properties:
+      category:
+        type: string
+        description: New category for the transaction
+      comment:
+        type: string
+        description: New comment on the transaction
