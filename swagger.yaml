@@ -99,7 +99,77 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
-  /transactions/current/grouped:
+  /user/transactions:
+    get:
+      tags:
+        - Transaction Module
+      summary: Get all transactions for the authenticated user
+      description: API endpoint to get all transactions for the currently authenticated user
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: An array of transactions for the authenticated user
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+        '404':
+          description: No transactions found
+  /user/transactions/{transactionId}:
+    get:
+      tags:
+        - Transaction Module
+      summary: Get a single transaction for the authenticated user
+      description: API endpoint to get details of a single transaction for the currently authenticated user
+      security:
+        - Bearer: []
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier for the transaction
+      responses:
+        '200':
+          description: Details of a single transaction for the authenticated user
+          schema:
+            $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+    patch:
+      tags:
+        - Transaction Module
+      summary: Update a transaction for the authenticated user
+      description: API endpoint to update the category or comment of a transaction for the currently authenticated user
+      security:
+        - Bearer: []
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier for the transaction
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              category:
+                type: string
+                description: New category for the transaction
+              comment:
+                type: string
+                description: New comment on the transaction
+      responses:
+        '200':
+          description: Transaction for the authenticated user updated
+          schema:
+            $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+  /user/transactions/current/grouped:
     get:
       tags:
         - Transaction Module
@@ -118,50 +188,6 @@ paths:
                 $ref: '#/definitions/Transaction'
         '404':
           description: No transactions found for the current month.
-  /transactions/{transactionId}:
-    get:
-      tags:
-        - Transaction Module
-      summary: Get a single transaction
-      description: API endpoint to get details of a single transaction for the currently authenticated user
-      security:
-        - Bearer: []
-      parameters:
-        - name: transactionId
-          in: path
-          required: true
-          type: string
-          description: Unique identifier for the transaction
-      responses:
-        '200':
-          description: Details of a single transaction
-          schema:
-            $ref: '#/definitions/Transaction'
-        '404':
-          description: Transaction not found
-    patch:
-      tags:
-        - Transaction Module
-      summary: Update transaction details
-      description: API endpoint to update details of a transaction for the currently authenticated user
-      security:
-        - Bearer: []
-      parameters:
-        - name: transactionId
-          in: path
-          required: true
-          type: string
-          description: Unique identifier for the transaction
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/TransactionUpdate'
-      responses:
-        '200':
-          description: Transaction details updated successfully
-        '404':
-          description: Transaction not found
 
 securityDefinitions:
   Bearer:
@@ -170,7 +196,6 @@ securityDefinitions:
     in: header
 
 definitions:
-  definitions:
   User:
     properties:
       email:
@@ -243,12 +268,3 @@ definitions:
       comment:
         type: string
         description: Comment on the transaction
-  TransactionUpdate:
-    type: object
-    properties:
-      category:
-        type: string
-        description: New category for the transaction
-      comment:
-        type: string
-        description: New comment on the transaction
